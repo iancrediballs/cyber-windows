@@ -1,0 +1,14 @@
+{
+  "AppVersion": "2.0.0.0",
+  "Title": "NEON//OS",
+  "Thumbnail": "thumbnail.jpg",
+  "Preview": null,
+  "Desc": "Interactive cyberpunk city that levels up with you. Earn HP, unlock features, hunt secrets. Pair with daemon/neural-link.ps1 so navigating Windows earns HP.",
+  "Author": "cyber-windows",
+  "License": "MIT",
+  "Contact": "https://github.com/iancrediballs/cyber-windows",
+  "Type": 1,
+  "FileName": "index.html",
+  "Arguments": null,
+  "IsAbsolutePath": false
+}

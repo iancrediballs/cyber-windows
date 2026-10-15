@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEON//OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Share+Tech+Mono&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="world"></canvas>
+  <div id="scan"></div>
+
+  <div id="hud">
+    <!-- identity / progression -->
+    <section id="id-panel" class="panel clip" title="Open codex (Tab)">
+      <div class="logo">NEON<span>//</span>OS</div>
+      <div class="lvl-row"><span id="lvl-num">LV 1</span><span id="lvl-title">BOOT_SEQUENCE</span></div>
+      <div class="bar"><div id="hp-fill"></div></div>
+      <div class="hp-row"><span id="hp-val">0 HP</span><span id="hp-next">NEXT 100</span></div>
+    </section>
+
+    <!-- clock -->
+    <section id="clock-panel">
+      <div id="clock">00:00</div>
+      <div id="date">----</div>
+      <div id="meta"><span id="weather">CLEAR</span> · <span id="link">LINK: OFFLINE</span></div>
+    </section>
+
+    <!-- status -->
+    <section id="status-panel" class="panel clip">
+      <div class="meter-label">SYNC</div>
+      <div class="bar thin"><div id="sync-fill"></div></div>
+      <div class="kv"><span>SECRETS</span><b id="secrets">0/0</b></div>
+      <div class="kv"><span>STREAK</span><b id="streak">1d</b></div>
+      <div class="kv"><span>SHARDS</span><b id="shards">0</b></div>
+    </section>
+
+    <button id="term-glyph" class="hidden" title="Terminal (`)">&gt;_</button>
+    <div id="toasts"></div>
+    <div id="ghost" class="hidden"><div class="ghost-face">◉‿◉</div><div id="ghost-say"></div></div>
+  </div>
+
+  <div id="levelup" class="hidden"><div class="lu-k">LEVEL UP</div><div id="lu-title" class="glitch" data-text=""></div><div id="lu-unlock"></div></div>
+  <div id="overlay-msg" class="hidden"></div>
+
+  <div id="codex" class="hidden">
+    <header><h2>CODEX</h2><button data-close>×</button></header>
+    <div class="cols">
+      <div><h3>PROGRESSION</h3><ol id="codex-levels"></ol></div>
+      <div><h3>ACHIEVEMENTS</h3><ul id="codex-ach"></ul></div>
+      <div><h3>SECRETS</h3><ul id="codex-eggs"></ul><h3>STATS</h3><ul id="codex-stats"></ul></div>
+    </div>
+  </div>
+
+  <div id="terminal" class="hidden">
+    <header><span>netrunner@neon-os:~</span><button data-close>×</button></header>
+    <div id="term-out"></div>
+    <div class="term-in"><span class="prompt">&gt;</span><input id="term-input" autocomplete="off" spellcheck="false"></div>
+  </div>
+
+  <div id="breach" class="hidden">
+    <header><span>BREACH PROTOCOL</span><span id="breach-timer">30.0</span><button data-close>×</button></header>
+    <div class="breach-body">
+      <div id="breach-grid"></div>
+      <div class="breach-side">
+        <h4>BUFFER</h4><div id="breach-buffer"></div>
+        <h4>DAEMON SEQUENCE</h4><div id="breach-target"></div>
+        <p id="breach-status">Pick from the highlighted row, then column, alternating.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/state.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/sfx.js"></script>
+  <script src="js/hud.js"></script>
+  <script src="js/eggs.js"></script>
+  <script src="js/breach.js"></script>
+  <script src="js/terminal.js"></script>
+  <script src="js/link.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

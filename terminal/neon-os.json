@@ -1,0 +1,41 @@
+{
+  "schemes": [
+    {
+      "name": "NEON//OS",
+      "background": "#07020F",
+      "foreground": "#E9F9FF",
+      "cursorColor": "#FCEE0A",
+      "selectionBackground": "#3D0A4F",
+      "black": "#0B0216",
+      "red": "#FF003C",
+      "green": "#39FF14",
+      "yellow": "#FCEE0A",
+      "blue": "#2A6BFF",
+      "purple": "#FF2BD6",
+      "cyan": "#00F0FF",
+      "white": "#C9D6E3",
+      "brightBlack": "#4A3A5C",
+      "brightRed": "#FF4F72",
+      "brightGreen": "#7DFF5C",
+      "brightYellow": "#FFF45C",
+      "brightBlue": "#6B9BFF",
+      "brightPurple": "#FF7AE6",
+      "brightCyan": "#7AF8FF",
+      "brightWhite": "#FFFFFF"
+    }
+  ],
+  "profiles": [
+    {
+      "guid": "{6e656f6e-2f2f-4f53-8000-6e65746f7275}",
+      "name": "NEON//OS Shell",
+      "commandline": "powershell.exe -NoLogo",
+      "colorScheme": "NEON//OS",
+      "font": { "face": "Cascadia Code", "size": 12 },
+      "opacity": 82,
+      "useAcrylic": true,
+      "cursorShape": "filledBox",
+      "padding": "12",
+      "experimental.retroTerminalEffect": true
+    }
+  ]
+}

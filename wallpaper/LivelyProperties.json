@@ -1,0 +1,7 @@
+{
+  "showHud": { "type": "checkbox", "value": true, "text": "Show HUD" },
+  "fpsCap": { "type": "slider", "value": 60, "min": 15, "max": 144, "step": 1, "text": "FPS cap" },
+  "sfxVolume": { "type": "slider", "value": 25, "min": 0, "max": 100, "step": 1, "text": "SFX volume" },
+  "linkPort": { "type": "textbox", "value": "47777", "text": "Neural Link port" },
+  "resetProgress": { "type": "button", "value": "Wipe save", "text": "Reset all progress" }
+}
