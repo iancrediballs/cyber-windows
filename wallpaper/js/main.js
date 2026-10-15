@@ -9,8 +9,8 @@
   /* ---------- boot ---------- */
   const q = new URLSearchParams(location.search);
   if (q.has('port')) CW.linkSetPort(q.get('port'));
-  if (q.has('demo')) CW.reset(true);
-  if (q.has('nohud')) document.getElementById('hud').classList.add('off'); // ?demo=5000 → fresh throwaway save at a given HP (see state.js SAVE_KEY)
+  if (q.has('demo')) CW.reset(true); // ?demo=5000 → fresh throwaway save at a given HP (see state.js SAVE_KEY)
+  if (q.has('nohud')) document.getElementById('hud').classList.add('off');
 
   CW.world.resize();
   const saved = CW.state.palette;

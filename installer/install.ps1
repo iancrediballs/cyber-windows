@@ -169,6 +169,41 @@ if (-not $SkipDaemon) {
 $zip = Join-Path $home_ 'NEON-OS-lively.zip'
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Compress-Archive -Path (Join-Path $appDir 'wallpaper\*') -DestinationPath $zip
+# Enable Lively input forwarding (Mouse + Keyboard) so clicks and typed secrets reach the wallpaper.
+# Lively reads Settings.json only at startup, so it is closed, patched, then relaunched.
+$livelySettings = @(
+    (Join-Path $env:LOCALAPPDATA 'Lively Wallpaper\Settings.json')
+    Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Packages') -Directory -Filter '*LivelyWallpaper*' -ErrorAction SilentlyContinue |
+        ForEach-Object { Join-Path $_.FullName 'LocalCache\Local\Lively Wallpaper\Settings.json' }
+) | Where-Object { Test-Path $_ }
+if ($livelySettings) {
+    $livelyProcs = Get-Process -Name 'Lively' -ErrorAction SilentlyContinue
+    $livelyExe = $livelyProcs | Select-Object -ExpandProperty Path -First 1 -ErrorAction SilentlyContinue
+    $livelyProcs | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Milliseconds 800
+    foreach ($f in $livelySettings) {
+        try {
+            $json = Get-Content $f -Raw | ConvertFrom-Json
+            if ($json.PSObject.Properties.Name -notcontains 'InputForward') { Write-Warning "Unrecognized Lively settings format, skipped: $f"; continue }
+            Copy-Item $f "$f.neonos.bak" -Force
+            $json.InputForward = 2                      # 0 = off, 1 = mouse, 2 = mouse + keyboard
+            if ($json.PSObject.Properties.Name -contains 'MouseInputMovAlways') { $json.MouseInputMovAlways = $true }
+            $json | ConvertTo-Json -Depth 20 | Set-Content -Path $f -Encoding UTF8
+            Step "Lively input forwarding: Mouse + Keyboard ($f)"
+        } catch { Write-Warning "Could not update Lively settings ($f): $_" }
+    }
+    if (-not $livelyExe) {
+        $livelyExe = @(
+            (Join-Path $env:LOCALAPPDATA 'Programs\Lively Wallpaper\Lively.exe'),
+            (Join-Path ${env:ProgramFiles} 'Lively Wallpaper\Lively.exe')
+        ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    }
+    if ($livelyExe) { Start-Process $livelyExe; Start-Sleep -Seconds 3 }
+    elseif ($livelyProcs) { Write-Host '  >> Reopen Lively Wallpaper from the Start menu to apply input settings.' -ForegroundColor Cyan }
+} else {
+    Write-Host '  >> Lively settings not found (install/launch Lively once, then re-run this installer).' -ForegroundColor Cyan
+}
+
 $candidates = @(
     (Get-Command 'livelycu.exe' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1),
     (Join-Path $env:LOCALAPPDATA 'Programs\Lively Wallpaper\Plugins\Lively.CommandUtility\livelycu.exe'),
@@ -186,7 +221,6 @@ else {
     Write-Host ''
     Write-Host '  >> Interactive wallpaper: install Lively Wallpaper (winget install rocksdanister.LivelyWallpaper)' -ForegroundColor Cyan
     Write-Host "  >> then drag this zip into Lively: $zip" -ForegroundColor Cyan
-    Write-Host '  >> Lively Settings → Wallpaper → Input: Mouse (and Keyboard) so the city can react.' -ForegroundColor Cyan
 }
 
 # ---------- apply ----------

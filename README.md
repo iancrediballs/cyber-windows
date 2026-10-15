@@ -22,7 +22,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\installer\install.ps1 -Res
 
 Options: `-Accent '#00F0FF'` (any hex), `-Port 47777`, `-SkipDaemon`, `-SkipWallpaper`, `-SkipTerminal`.
 
-If the installer can't apply the Lively wallpaper automatically, drag `%LOCALAPPDATA%\NeonOS\NEON-OS-lively.zip` into Lively, then in **Lively → Settings → Wallpaper → Input** enable **Mouse** (and **Keyboard** for typed secrets / terminal). Audio reactivity uses Lively's built-in system audio capture.
+If the installer can't apply the Lively wallpaper automatically, drag `%LOCALAPPDATA%\NeonOS\NEON-OS-lively.zip` into Lively, The installer also switches Lively's input forwarding to **Mouse + Keyboard** (it restarts Lively to apply). If Lively wasn't installed/launched yet, run the installer again afterwards, or set it manually in **Lively → Settings → Wallpaper → Input**. Audio reactivity uses Lively's built-in system audio capture.
 
 Uninstall (restores every original setting from `%LOCALAPPDATA%\NeonOS\backup.json`):
 
