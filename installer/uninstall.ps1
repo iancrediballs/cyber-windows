@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Removes NEON//OS and restores every setting install.ps1 changed.
 

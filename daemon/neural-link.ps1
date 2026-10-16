@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   NEON//OS Neural Link — turns real Windows navigation into Hack Points for the wallpaper.
 

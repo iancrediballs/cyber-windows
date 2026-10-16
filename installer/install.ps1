@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Installs the NEON//OS cyberpunk theme for Windows 11 (current user only, no admin).
 
@@ -200,6 +200,12 @@ if ($livelySettings) {
             if ($json.PSObject.Properties.Name -notcontains 'InputForward') { Write-Warning "Unrecognized Lively settings format, skipped: $f"; continue }
             Copy-Item $f "$f.neonos.bak" -Force
             $json.InputForward = 2                      # 0 = off, 1 = mouse, 2 = mouse + keyboard
+            # Pre-install into Lively's library so NEON//OS appears as a tile on next launch.
+            $libRoot = if ($json.PSObject.Properties.Name -contains 'WallpaperDir' -and $json.WallpaperDir) { $json.WallpaperDir } else { Join-Path (Split-Path $f) 'Library' }
+            $libDest = Join-Path $libRoot 'wallpapers\NEON-OS'
+            New-Item -ItemType Directory -Force -Path $libDest | Out-Null
+            Copy-Item (Join-Path $appDir 'wallpaper\*') $libDest -Recurse -Force
+            Step "Added NEON//OS to Lively library ($libDest)"
             if ($json.PSObject.Properties.Name -contains 'MouseInputMovAlways') { $json.MouseInputMovAlways = $true }
             $json | ConvertTo-Json -Depth 20 | Set-Content -Path $f -Encoding UTF8
             Step "Lively input forwarding: Mouse + Keyboard ($f)"
@@ -232,8 +238,8 @@ if ($candidates) {
 if ($applied) { Step 'Interactive wallpaper applied in Lively' }
 else {
     Write-Host ''
-    Write-Host '  >> Interactive wallpaper: install Lively Wallpaper (winget install rocksdanister.LivelyWallpaper)' -ForegroundColor Cyan
-    Write-Host "  >> then drag this zip into Lively: $zip" -ForegroundColor Cyan
+    Write-Host '  >> Last step: open Lively, click the NEON//OS tile, then "Set as wallpaper".' -ForegroundColor Cyan
+    Write-Host "  >> No tile? Drag this zip onto the Lively window: $zip" -ForegroundColor Cyan
 }
 
 # ---------- apply ----------
