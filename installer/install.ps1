@@ -169,6 +169,19 @@ if (-not $SkipDaemon) {
 $zip = Join-Path $home_ 'NEON-OS-lively.zip'
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Compress-Archive -Path (Join-Path $appDir 'wallpaper\*') -DestinationPath $zip
+# Locate Lively's install folder: per-user, machine-wide (x64/x86) or via its Start-menu shortcut.
+function Find-LivelyRoot {
+    $roots = @(
+        (Join-Path $env:LOCALAPPDATA 'Programs\Lively Wallpaper'),
+        (Join-Path $env:ProgramFiles 'Lively Wallpaper'),
+        (Join-Path ${env:ProgramFiles(x86)} 'Lively Wallpaper')
+    )
+    $lnk = Get-ChildItem "$env:ProgramData\Microsoft\Windows\Start Menu", "$env:APPDATA\Microsoft\Windows\Start Menu" -Recurse -Filter 'Lively*.lnk' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($lnk) { $roots += Split-Path ((New-Object -ComObject WScript.Shell).CreateShortcut($lnk.FullName).TargetPath) }
+    $roots | Where-Object { $_ -and (Test-Path (Join-Path $_ 'Lively.exe')) } | Select-Object -First 1
+}
+$livelyRoot = Find-LivelyRoot
+
 # Enable Lively input forwarding (Mouse + Keyboard) so clicks and typed secrets reach the wallpaper.
 # Lively reads Settings.json only at startup, so it is closed, patched, then relaunched.
 $livelySettings = @(
@@ -192,22 +205,22 @@ if ($livelySettings) {
             Step "Lively input forwarding: Mouse + Keyboard ($f)"
         } catch { Write-Warning "Could not update Lively settings ($f): $_" }
     }
-    if (-not $livelyExe) {
-        $livelyExe = @(
-            (Join-Path $env:LOCALAPPDATA 'Programs\Lively Wallpaper\Lively.exe'),
-            (Join-Path ${env:ProgramFiles} 'Lively Wallpaper\Lively.exe')
-        ) | Where-Object { Test-Path $_ } | Select-Object -First 1
-    }
+    if (-not $livelyExe -and $livelyRoot) { $livelyExe = Join-Path $livelyRoot 'Lively.exe' }
     if ($livelyExe) { Start-Process $livelyExe; Start-Sleep -Seconds 3 }
     elseif ($livelyProcs) { Write-Host '  >> Reopen Lively Wallpaper from the Start menu to apply input settings.' -ForegroundColor Cyan }
 } else {
-    Write-Host '  >> Lively settings not found (install/launch Lively once, then re-run this installer).' -ForegroundColor Cyan
+    if ($livelyRoot) {
+        # Installed but never launched: start it once so it writes Settings.json, then ask for a re-run.
+        Start-Process (Join-Path $livelyRoot 'Lively.exe')
+        Write-Host '  >> Lively was started for the first time. Close its window, then re-run this installer to enable Mouse + Keyboard.' -ForegroundColor Cyan
+    } else {
+        Write-Host '  >> Lively not found. Install it (winget install rocksdanister.LivelyWallpaper), then re-run this installer.' -ForegroundColor Cyan
+    }
 }
 
 $candidates = @(
     (Get-Command 'livelycu.exe' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -First 1),
-    (Join-Path $env:LOCALAPPDATA 'Programs\Lively Wallpaper\Plugins\Lively.CommandUtility\livelycu.exe'),
-    (Join-Path ${env:ProgramFiles} 'Lively Wallpaper\Plugins\Lively.CommandUtility\livelycu.exe')
+    $(if ($livelyRoot) { Get-ChildItem $livelyRoot -Recurse -Filter 'livelycu.exe' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1 })
 ) | Where-Object { $_ -and (Test-Path $_) }
 $applied = $false
 if ($candidates) {
