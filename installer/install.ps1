@@ -161,8 +161,24 @@ if (-not $SkipDaemon) {
     $sc.WindowStyle = 7
     $sc.Description = 'NEON//OS Neural Link daemon'
     $sc.Save()
+    # Replace any running copy so the freshly installed version is the one serving.
+    Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe' OR Name = 'pwsh.exe'" |
+        Where-Object { $_.CommandLine -and $_.CommandLine -like '*neural-link.ps1*' -and $_.ProcessId -ne $PID } |
+        ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
     Start-Process -FilePath $psExe -ArgumentList $args_ -WindowStyle Hidden
-    Step "Neural Link daemon started on http://localhost:$Port/state and registered at logon"
+    Step 'Neural Link registered at logon; waiting for it to come online...'
+    $online = $false
+    for ($i = 0; $i -lt 20 -and -not $online; $i++) {
+        Start-Sleep -Milliseconds 750
+        try { Invoke-RestMethod "http://localhost:$Port/state" -TimeoutSec 2 | Out-Null; $online = $true } catch { }
+    }
+    if ($online) { Step "Neural Link ONLINE at http://localhost:$Port/state" }
+    else {
+        Write-Warning "Neural Link did not respond on port $Port. Log follows:"
+        $log = Join-Path $home_ 'neural-link.log'
+        if (Test-Path $log) { Get-Content $log -Tail 25 | ForEach-Object { Write-Host "    $_" } }
+        else { Write-Host '    (no log written - the script failed before starting)' }
+    }
 }
 
 # ---------- Lively Wallpaper ----------

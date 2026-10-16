@@ -26,6 +26,12 @@ param(
 Set-StrictMode -Version 3
 $ErrorActionPreference = 'Stop'
 
+# Hidden runs have no console, so log everything to %LOCALAPPDATA%\NeonOS\neural-link.log
+$logPath = Join-Path $env:LOCALAPPDATA 'NeonOS\neural-link.log'
+New-Item -ItemType Directory -Force -Path (Split-Path $logPath) | Out-Null
+try { Start-Transcript -Path $logPath -Force | Out-Null } catch { }
+trap { Write-Host "FATAL: $_"; Write-Host $_.ScriptStackTrace; try { Stop-Transcript | Out-Null } catch { }; exit 1 }
+
 # ---------- single instance ----------
 $mutex = New-Object System.Threading.Mutex($false, "Local\NeonOS.NeuralLink.$Port")
 if (-not $mutex.WaitOne(0)) { Write-Host "Neural Link already running on port $Port."; exit 0 }
