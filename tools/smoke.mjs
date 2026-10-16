@@ -101,3 +101,11 @@ check(after - before >= 10 + 6 + 75 + 32, `neural link awards HP for activity (+
 await browser.close();
 if (errors.length) { console.error('FAIL\n' + errors.join('\n')); process.exit(1); }
 console.log('PASS → screenshots in ' + out);
+
+// Windows PowerShell 5.1 reads BOM-less scripts as ANSI; non-ASCII (e.g. em-dash) can become a smart
+// quote that terminates strings. Keep every .ps1 pure ASCII.
+for (const f of ['installer/install.ps1', 'installer/uninstall.ps1', 'daemon/neural-link.ps1']) {
+  const txt = fs.readFileSync(path.join(root, f), 'utf8').replace(/^﻿/, '');
+  if (/[^\x00-\x7F]/.test(txt)) { console.error('FAIL non-ASCII in ' + f); process.exit(1); }
+}
+console.log('ok   PowerShell scripts are ASCII-only');

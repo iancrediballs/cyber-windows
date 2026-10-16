@@ -51,7 +51,7 @@ public static extern System.IntPtr SendMessageTimeout(System.IntPtr hWnd, uint M
 # ---------- registry with backup ----------
 $touched = [ordered]@{}
 if (Test-Path $backup) {
-    # Never overwrite the ORIGINAL backup on re-install — that would capture NEON values as "original".
+    # Never overwrite the ORIGINAL backup on re-install - that would capture NEON values as "original".
     $existing = Get-Content $backup -Raw | ConvertFrom-Json
     foreach ($p in $existing.PSObject.Properties) { $touched[$p.Name] = $p.Value }
 }
@@ -84,7 +84,7 @@ function To-Abgr([byte]$r, [byte]$g, [byte]$b) { [BitConverter]::ToInt32([byte[]
 function To-Argb([byte]$a, [byte]$r, [byte]$g, [byte]$b) { [BitConverter]::ToInt32([byte[]]($b, $g, $r, $a), 0) }
 function Shade([byte]$c, [double]$f) { [byte][math]::Max(0, [math]::Min(255, [math]::Round($c * $f))) }
 
-# AccentPalette: 8 RGBA swatches, light → dark. Windows picks [3] as the main accent.
+# AccentPalette: 8 RGBA swatches, light -> dark. Windows picks [3] as the main accent.
 $factors = 1.6, 1.35, 1.15, 1.0, 0.75, 0.55, 0.35, 0.2
 $palette = New-Object byte[] 32
 for ($i = 0; $i -lt 8; $i++) {
@@ -131,7 +131,7 @@ if (-not $SkipWallpaper) {
 $touched | ConvertTo-Json -Depth 4 | Set-Content -Path $backup -Encoding UTF8
 
 # ---------- copy app ----------
-Step "Installing app files → $appDir"
+Step "Installing app files -> $appDir"
 New-Item -ItemType Directory -Force -Path $appDir | Out-Null
 foreach ($dir in 'wallpaper', 'daemon', 'installer', 'terminal', 'assets') {
     $src = Join-Path $repo $dir

@@ -56,7 +56,7 @@ if (Test-Path $backup) {
     if ($null -ne $wp) { [void][NeonOS.Native]::SystemParametersInfo(0x0014, 0, $wp, 0x03) }
     Remove-Item $backup -Force
 } else {
-    Write-Warning 'No backup.json found — registry left as is.'
+    Write-Warning 'No backup.json found - registry left as is.'
 }
 
 $res = [UIntPtr]::Zero

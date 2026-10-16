@@ -1,14 +1,14 @@
 ﻿<#
 .SYNOPSIS
-  NEON//OS Neural Link — turns real Windows navigation into Hack Points for the wallpaper.
+  NEON//OS Neural Link - turns real Windows navigation into Hack Points for the wallpaper.
 
 .DESCRIPTION
   Runs a tiny HTTP endpoint on http://localhost:<Port>/state that the NEON//OS wallpaper polls.
   Tracks, locally and only in aggregate:
-    switches  — foreground window changes
-    launches  — new windowed app instances
-    apps      — distinct app executables ever seen      (names stored)
-    folders   — distinct File Explorer folders visited  (stored as SHA-256 hashes only)
+    switches  - foreground window changes
+    launches  - new windowed app instances
+    apps      - distinct app executables ever seen      (names stored)
+    folders   - distinct File Explorer folders visited  (stored as SHA-256 hashes only)
   No keystrokes, window titles, or file contents are read. State: %LOCALAPPDATA%\NeonOS\link-state.json
 
 .PARAMETER Port
@@ -93,7 +93,7 @@ $lastFgPid = 0
 $knownPids = New-Object 'System.Collections.Generic.HashSet[int]'
 $switchTimes = New-Object System.Collections.Generic.Queue[datetime]
 $shell = $null
-try { $shell = New-Object -ComObject Shell.Application } catch { Write-Warning 'Shell.Application unavailable — folder tracking disabled.' }
+try { $shell = New-Object -ComObject Shell.Application } catch { Write-Warning 'Shell.Application unavailable - folder tracking disabled.' }
 $firstScan = $true
 
 function Update-Foreground {
@@ -163,8 +163,8 @@ function Get-StateJson {
 # ---------- HTTP ----------
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
-try { $listener.Start() } catch { Write-Error "Cannot bind http://localhost:$Port/ — port in use? $_"; exit 1 }
-Write-Host "NEON//OS Neural Link online → http://localhost:$Port/state  (Ctrl+C to stop)"
+try { $listener.Start() } catch { Write-Error "Cannot bind http://localhost:$Port/ - port in use? $_"; exit 1 }
+Write-Host "NEON//OS Neural Link online -> http://localhost:$Port/state  (Ctrl+C to stop)"
 
 $lastSave = [datetime]::UtcNow
 try {
