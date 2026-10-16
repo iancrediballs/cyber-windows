@@ -135,7 +135,10 @@ Step "Installing app files -> $appDir"
 New-Item -ItemType Directory -Force -Path $appDir | Out-Null
 foreach ($dir in 'wallpaper', 'daemon', 'installer', 'terminal', 'assets') {
     $src = Join-Path $repo $dir
-    if (Test-Path $src) { Copy-Item $src (Join-Path $appDir $dir) -Recurse -Force }
+    $dst = Join-Path $appDir $dir
+    # Replace, never merge: Copy-Item into an existing folder nests it (app\daemon\daemon) and the stale copy keeps running.
+    if (Test-Path $dst) { Remove-Item $dst -Recurse -Force }
+    if (Test-Path $src) { Copy-Item $src $dst -Recurse -Force }
 }
 
 # ---------- Windows Terminal fragment ----------
@@ -219,6 +222,7 @@ if ($livelySettings) {
             # Pre-install into Lively's library so NEON//OS appears as a tile on next launch.
             $libRoot = if ($json.PSObject.Properties.Name -contains 'WallpaperDir' -and $json.WallpaperDir) { $json.WallpaperDir } else { Join-Path (Split-Path $f) 'Library' }
             $libDest = Join-Path $libRoot 'wallpapers\NEON-OS'
+            if (Test-Path $libDest) { Remove-Item $libDest -Recurse -Force }
             New-Item -ItemType Directory -Force -Path $libDest | Out-Null
             Copy-Item (Join-Path $appDir 'wallpaper\*') $libDest -Recurse -Force
             Step "Added NEON//OS to Lively library ($libDest)"
